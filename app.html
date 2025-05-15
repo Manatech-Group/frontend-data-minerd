@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>CRUD DataMinerd</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1, h2 { color: #333; }
+    .section { margin-bottom: 40px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    label { display: block; margin-top: 8px; }
+    input, select, textarea, button { margin-top: 4px; padding: 6px; width: 100%; box-sizing: border-box; }
+    .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .full-width { width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Administración de DataMinerd</h1>
+
+  <!-- Sección de Creación -->
+  <div class="section" id="createSection">
+    <h2>Crear nuevo registro - no usar esta seccion de crear todavia en proceso de desarrollo</h2>
+    <div class="two-cols">
+      <div>
+        <label>Site</label>
+        <input type="text" id="create_Site" />
+      </div>
+      <div>
+        <label>Circuito</label>
+        <input type="number" id="create_Circuito" />
+      </div>
+      <div>
+        <label>Nombre_Escuela</label>
+        <input type="text" id="create_Nombre_Escuela" />
+      </div>
+      <div>
+        <label>WAN_IP</label>
+        <input type="text" id="create_WAN_IP" />
+      </div>
+      <div>
+        <label>Latitud</label>
+        <input type="text" id="create_Latitud" />
+      </div>
+      <div>
+        <label>Longitud</label>
+        <input type="text" id="create_Longitud" />
+      </div>
+      <div>
+        <label>Long_Name</label>
+        <input type="text" id="create_Long_Name" />
+      </div>
+      <div>
+        <label>Nombre_Contacto</label>
+        <input type="text" id="create_Nombre_Contacto" />
+      </div>
+      <div>
+        <label>Telefono_Contacto</label>
+        <input type="text" id="create_Telefono_Contacto" />
+      </div>
+      <div>
+        <label>Regional</label>
+        <input type="text" id="create_Regional" />
+      </div>
+      <div>
+        <label>Distrito</label>
+        <input type="text" id="create_Distrito" />
+      </div>
+      <div>
+        <label>Codigo_Planta_Fisica</label>
+        <input type="text" id="create_Codigo_Planta_Fisica" />
+      </div>
+      <div>
+        <label>Hostname</label>
+        <input type="text" id="create_Hostname" />
+      </div>
+      <div>
+        <label>DDNS</label>
+        <input type="text" id="create_DDNS" />
+      </div>
+      <div>
+        <label>IP_Gestion_FMG</label>
+        <input type="text" id="create_IP_Gestion_FMG" />
+      </div>
+      <div>
+        <label>IP_Gestion_SW</label>
+        <input type="text" id="create_IP_Gestion_SW" />
+      </div>
+      <div>
+        <label>SSHStatus</label>
+        <select id="create_SSHStatus">
+          <option value="">(vacío)</option>
+          <option value="true">True</option>
+          <option value="false">False</option>
+        </select>
+      </div>
+      <div>
+        <label>LastSSHTest</label>
+        <input type="datetime-local" id="create_LastSSHTest" />
+      </div>
+      <div>
+        <label>PingStatus</label>
+        <select id="create_PingStatus">
+          <option value="">(vacío)</option>
+          <option value="true">True</option>
+          <option value="false">False</option>
+        </select>
+      </div>
+      <div>
+        <label>LastPingTest</label>
+        <input type="datetime-local" id="create_LastPingTest" />
+      </div>
+      <div>
+        <label>Fortigate</label>
+        <input type="text" id="create_Fortigate" />
+      </div>
+      <div>
+        <label>Fortigate_FW</label>
+        <input type="text" id="create_Fortigate_FW" />
+      </div>
+      <div>
+        <label>Fortigate_HTTPS</label>
+        <select id="create_Fortigate_HTTPS">
+          <option value="">(vacío)</option>
+          <option value="true">True</option>
+          <option value="false">False</option>
+        </select>
+      </div>
+      <div>
+        <label>SiteType</label>
+        <input type="text" id="create_SiteType" />
+      </div>
+    </div>
+    <button onclick="createRecord()">Crear</button>
+  </div>
+
+  <!-- Sección de Búsqueda y Tabla -->
+  <div class="section">
+    <h2>Consultar / Filtrar</h2>
+    <input type="text" id="searchInput" placeholder="Buscar por site..." class="full-width" />
+    <button onclick="filterBySite()">Buscar</button>
+    <button onclick="fetchAllData()">Limpiar filtro</button>
+    <table id="dataTable">
+      <thead><tr id="tableHeader"></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Sección de Eliminación -->
+  <div class="section">
+    <h2>Eliminar registro - seccion en desarrollo, no usar por favor</h2>
+    <input type="text" id="deleteSite" placeholder="Site a eliminar" class="full-width" />
+    <button onclick="deleteBySite()">Eliminar</button>
+  </div>
+
+ <!-- Sección de Edición -->
+<div class="section">
+  <h2>Editar registro</h2>
+  <input type="text" id="edit_Site" placeholder="Site (ID)" class="full-width" readonly />
+  <div class="two-cols">
+    <div><label>Circuito</label><input type="number" id="edit_Circuito" /></div>
+    <div><label>Nombre_Escuela</label><input type="text" id="edit_Nombre_Escuela" /></div>
+    <div><label>WAN_IP</label><input type="text" id="edit_WAN_IP" /></div>
+    <div><label>Latitud</label><input type="text" id="edit_Latitud" /></div>
+    <div><label>Longitud</label><input type="text" id="edit_Longitud" /></div>
+    <div><label>Long_Name</label><input type="text" id="edit_Long_Name" /></div>
+    <div><label>Nombre_Contacto</label><input type="text" id="edit_Nombre_Contacto" /></div>
+    <div><label>Telefono_Contacto</label><input type="text" id="edit_Telefono_Contacto" /></div>
+    <div><label>Regional</label><input type="text" id="edit_Regional" /></div>
+    <div><label>Distrito</label><input type="text" id="edit_Distrito" /></div>
+    <div><label>Codigo_Planta_Fisica</label><input type="text" id="edit_Codigo_Planta_Fisica" /></div>
+    <div><label>Hostname</label><input type="text" id="edit_Hostname" /></div>
+    <div><label>DDNS</label><input type="text" id="edit_DDNS" /></div>
+    <div><label>IP_Gestion_FMG</label><input type="text" id="edit_IP_Gestion_FMG" /></div>
+    <div><label>IP_Gestion_SW</label><input type="text" id="edit_IP_Gestion_SW" /></div>
+    <div><label>SiteType</label><input type="text" id="edit_SiteType" /></div>
+  </div>
+  <button onclick="loadForEdit()">Cargar datos</button>
+  <button onclick="updateBySite()">Actualizar</button>
+</div>
+
+
+  <script>
+    const API_URL = "https://dataminerd.manatech.do/api/DataMinerd";
+
+    // Construye la tabla desde cualquier array de objetos
+    function populateTable(data) {
+      const header = document.getElementById("tableHeader");
+      const body = document.getElementById("tableBody");
+      header.innerHTML = "";
+      body.innerHTML = "";
+
+      if (data.length === 0) {
+        header.innerHTML = "<th>No hay datos</th>";
+        return;
+      }
+      // Encabezados dinámicos
+      Object.keys(data[0]).forEach(key => {
+        const th = document.createElement("th");
+        th.textContent = key;
+        header.appendChild(th);
+      });
+      // Filas
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+        Object.values(item).forEach(val => {
+          const td = document.createElement("td");
+          td.textContent = val ?? "";
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    // Obtener todos
+    async function fetchAllData() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      populateTable(data);
+    }
+
+    // Filtrar por site
+    async function filterBySite() {
+      const site = document.getElementById("searchInput").value.trim();
+      if (!site) return fetchAllData();
+      const res = await fetch(`${API_URL}/${site}`);
+      if (!res.ok) {
+        alert("No encontrado");
+        populateTable([]);
+        return;
+      }
+      const dto = await res.json();
+      populateTable([dto]);
+    }
+
+    // Crear
+    async function createRecord() {
+      const dto = {};
+      // toma cada input de create_
+      document.querySelectorAll('[id^="create_"]').forEach(i => {
+        const key = i.id.replace("create_", "");
+        let val = i.value;
+        if (i.type === "number") val = val ? Number(val) : null;
+        if (i.tagName === "SELECT" && val === "") val = null;
+        if (i.type === "datetime-local") val = val ? new Date(val).toISOString() : null;
+        dto[key] = val;
+      });
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dto)
+      });
+      if (res.ok) {
+        alert("Creado con éxito");
+        fetchAllData();
+      } else {
+        alert("Error al crear");
+      }
+    }
+
+    // Eliminar
+    async function deleteBySite() {
+      const site = document.getElementById("deleteSite").value.trim();
+      if (!site) return alert("Indica un site");
+      if (!confirm(`Eliminar ${site}?`)) return;
+      const res = await fetch(`${API_URL}/${site}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Eliminado");
+        fetchAllData();
+      } else {
+        alert("No se pudo eliminar");
+      }
+    }
+
+    // Cargar datos existentes en el form de edición
+   async function loadForEdit() {
+  const siteInput = document.getElementById("edit_Site");
+  const site = prompt("Ingrese el site a editar:");
+  if (!site) return;
+
+  const res = await fetch(`${API_URL}/${site}`); // ← aquí corregido
+  if (!res.ok) return alert("No existe");
+
+  const dto = await res.json();
+  console.log(dto); // para verificar la forma del objeto
+
+  siteInput.value = site;
+
+  document.getElementById("edit_Circuito").value            = dto.circuito            ?? "";
+  document.getElementById("edit_Nombre_Escuela").value      = dto.nombre_Escuela      ?? "";
+  console.log("Antes de WAN_IP", dto.wan_IP);
+  document.getElementById("edit_WAN_IP").value              = dto.waN_IP             ?? "";
+  console.log("Después de WAN_IP");
+  document.getElementById("edit_Latitud").value             = dto.latitud             ?? "";
+  document.getElementById("edit_Longitud").value            = dto.longitud            ?? "";
+  document.getElementById("edit_Long_Name").value           = dto.long_Name           ?? "";
+  document.getElementById("edit_Nombre_Contacto").value     = dto.nombre_Contacto     ?? "";
+  document.getElementById("edit_Telefono_Contacto").value   = dto.telefono_Contacto   ?? "";
+  document.getElementById("edit_Regional").value            = dto.regional            ?? "";
+  document.getElementById("edit_Distrito").value            = dto.distrito            ?? "";
+  document.getElementById("edit_Codigo_Planta_Fisica").value= dto.codigo_Planta_Fisica?? "";
+  document.getElementById("edit_Hostname").value            = dto.hostname            ?? "";
+  document.getElementById("edit_DDNS").value                = dto.ddns                ?? "";
+  document.getElementById("edit_IP_Gestion_FMG").value      = dto.iP_Gestion_FMG      ?? "";
+  document.getElementById("edit_IP_Gestion_SW").value       = dto.iP_Gestion_SW       ?? "";
+  document.getElementById("edit_SiteType").value            = dto.siteType            ?? "";
+}
+
+
+    // Actualizar
+   async function updateBySite() {
+  const site = document.getElementById("edit_Site").value;
+  if (!site) return alert("Carga primero");
+
+  const dto = {
+    Circuito: NumberOrNull("edit_Circuito"),
+    Nombre_Escuela: valueOrNull("edit_Nombre_Escuela"),
+    WAN_IP: valueOrNull("edit_WAN_IP"),
+    Latitud: valueOrNull("edit_Latitud"),
+    Longitud: valueOrNull("edit_Longitud"),
+    Long_Name: valueOrNull("edit_Long_Name"),
+    Nombre_Contacto: valueOrNull("edit_Nombre_Contacto"),
+    Telefono_Contacto: valueOrNull("edit_Telefono_Contacto"),
+    Regional: valueOrNull("edit_Regional"),
+    Distrito: valueOrNull("edit_Distrito"),
+    Codigo_Planta_Fisica: valueOrNull("edit_Codigo_Planta_Fisica"),
+    Hostname: valueOrNull("edit_Hostname"),
+    DDNS: valueOrNull("edit_DDNS"),
+    IP_Gestion_FMG: valueOrNull("edit_IP_Gestion_FMG"),
+    IP_Gestion_SW: valueOrNull("edit_IP_Gestion_SW"),
+    SiteType: valueOrNull("edit_SiteType")
+  };
+
+  const res = await fetch(`${API_URL}/${site}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto)
+  });
+
+  if (res.ok) {
+    alert("Actualizado");
+    fetchAllData();
+  } else {
+    alert("Error al actualizar");
+  }
+}
+
+function valueOrNull(id) {
+  const val = document.getElementById(id).value.trim();
+  return val === "" ? null : val;
+}
+
+function NumberOrNull(id) {
+  const val = document.getElementById(id).value;
+  return val === "" ? null : Number(val);
+}
+
+
+    // Inicializa al cargar la página
+    fetchAllData();
+  </script>
+</body>
+</html>
