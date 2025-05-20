@@ -1,0 +1,26 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./css/style.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Manatech-Group/frontend-data-minerd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Manatech-Group/frontend-data-minerd/issues"
+  },
+  "homepage": "https://github.com/Manatech-Group/frontend-data-minerd#readme",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.7",
+    "flowbite": "^3.1.2",
+    "simple-datatables": "^10.0.0",
+    "tailwindcss": "^4.1.7"
+  }
+}
