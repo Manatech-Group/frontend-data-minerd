@@ -1,6 +1,6 @@
 // Filtro.js
 
-const API_URL = "http://localhost:5293/api/DataMinerd";
+const API_URL = "https://dataminerd.manatech.do/api/DataMinerd";
 
 let allData = [];
 let dataTable = null;
