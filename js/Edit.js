@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5293/api/DataMinerd";
+const API_URL = "https://dataminerd.manatech.do/api/DataMinerd";
 
 // Cargar datos existentes en el form de edición
    async function loadForEdit() {

@@ -1,5 +1,5 @@
 
-   const API_URL = "http://localhost:5293/api/DataMinerd"; 
+   const API_URL = "https://dataminerd.manatech.do/api/DataMinerd"; 
     
     // Crear
     async function createRecord() {
