@@ -82,7 +82,7 @@ async function updateBySite() {
     if (res.ok) {
       alert("Registro actualizado correctamente.");
       // Opcional: redirigir o recargar
-      // window.location.href = "lista.html";
+      window.location.href = "app.html";
     } else {
       const errText = await res.text();
       console.error("Error al actualizar:", errText);
@@ -93,6 +93,21 @@ async function updateBySite() {
     alert("Ocurrió un error al actualizar.");
   }
 }
+
+async function promptForSite() {
+  const current = document.getElementById('edit_Site').value;
+  const site = prompt('Por favor, ingresa el Site (ID):', current);
+  if (site !== null) {
+    const id = site.trim();
+    if (!id) return;
+
+    // Actualiza el input
+    document.getElementById('edit_Site').value = id;
+    // Vuelve a cargar los datos de ese Site
+    await loadForEdit(id);
+  }
+}
+
 
 // Helpers para convertir valores vacíos a null o Number
 function valueOrNull(id) {

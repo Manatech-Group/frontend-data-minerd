@@ -57,7 +57,7 @@ function fillTable(data) {
       <td class="px-6 py-4">${distrito}</td>
       <td class="px-6 py-4">
         <a 
-          href="html/Edit.html?site=${encodeURIComponent(site)}" 
+          href="Edit.html?site=${encodeURIComponent(site)}" 
           class="text-blue-600 hover:underline"
         >
           Editar

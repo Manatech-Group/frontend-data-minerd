@@ -27,7 +27,7 @@
     <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
       <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
         <li>
-          <a href="#" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">Inicio</a>
+          <a href="app.html" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">Inicio</a>
         </li>
         <li>
             <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">#<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -62,7 +62,9 @@
   </div>
 </nav>
 
-<section class="bg-white dark:bg-gray-900">
+
+
+<section class="bg-white dark:bg-gray-900 pb-20">
   <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16">
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Editar registro</h2>
     <form id="editForm" onsubmit="event.preventDefault(); updateBySite();">
@@ -82,6 +84,8 @@
             readonly
           />
         </div>
+
+       
 
         <!-- Circuito -->
         <div>
@@ -334,6 +338,14 @@
 >
   Actualizar
 </button>
+
+        <button
+          type="button"
+          onclick="promptForSite()"
+          class="h-10 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+          Ingresar Site
+        </button>
+
   <a
     href="app.html"
     class="text-red-600 inline-flex items-center hover:text-white border border-red-600 
@@ -349,6 +361,26 @@
     </form>
   </div>
 </section>
+
+
+<footer class="fixed bottom-0 left-0 z-20 w-full p-4 bg-white border-t border-gray-200 shadow-sm md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 dark:border-gray-600">
+    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a href="" class="hover:underline">Manatech™</a>. All Rights Reserved.
+    </span>
+    <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">About</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline">Contact</a>
+        </li>
+    </ul>
+</footer>
 
   <script src="../js/Edit.js"></script>
 </body>
