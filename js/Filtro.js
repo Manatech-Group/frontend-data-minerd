@@ -1,6 +1,6 @@
 // Filtro.js
 
-const API_URL = "https://api.dataminerd.manatech.do/api/DataMinerd";
+const API_URL = "http://localhost:5293/api/DataMinerd";
 
 let allData = [];
 let dataTable = null;
@@ -80,7 +80,7 @@ function initDataTable() {
     perPage: 10,
     perPageSelect: [10, 25, 50, 100],
     fixedHeight: true,
-    searchable: true,
+    searchable: false,
     layout: { top: "#table-controls", bottom: true },
     labels: {
       placeholder: "Buscar en la tabla…",
@@ -108,25 +108,44 @@ function setupSearchListeners() {
   const btnS  = document.getElementById("btnSearch");
   const btnC  = document.getElementById("btnClear");
 
+  // Función que trae datos (todos o filtrados)
+  async function fetchAndFill(term = "") {
+    const url = term
+      ? `${API_URL}/search?search=${encodeURIComponent(term)}`
+      : API_URL;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const data = await res.json();
+      fillTable(data);
+      dataTable.update();
+      // Si quieres que allData siempre refleje lo cargado:
+      allData = data;
+    } catch (err) {
+      console.error("Error al buscar:", err);
+      alert("No se pudo realizar la búsqueda. Revisa la consola.");
+    }
+  }
+
+  // Botón Buscar: llama al endpoint con el término
   btnS.addEventListener("click", () => {
-    const term = input.value.toLowerCase().trim();
-    const filtered = allData.filter(item =>
-      getField(item, "Site").toLowerCase().includes(term)
-    );
-    fillTable(filtered);
-    dataTable.update();
+    const term = input.value.trim();
+    fetchAndFill(term);
   });
 
+  // Botón Limpiar: quita el término y recarga todo
   btnC.addEventListener("click", () => {
     input.value = "";
-    fillTable(allData);
-    dataTable.update();
+    fetchAndFill();
   });
 
+  // Tecla Enter dispara búsqueda
   input.addEventListener("keyup", e => {
     if (e.key === "Enter") btnS.click();
   });
 }
+
+
 
 // 6) Arranque
 document.addEventListener("DOMContentLoaded", async () => {

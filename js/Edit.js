@@ -1,4 +1,4 @@
-const API_URL = "https://api.dataminerd.manatech.do/api/DataMinerd";
+const API_URL = "http://localhost:5293/api/DataMinerd";
 
 // Al cargar la página, extrae ?site=XYZ y llama a loadForEdit
 document.addEventListener("DOMContentLoaded", () => {
