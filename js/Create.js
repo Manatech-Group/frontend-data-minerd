@@ -5,7 +5,7 @@
     async function createRecord() {
       const dto = {};
       // toma cada input de create_
-      document.querySelectorAll('[id^="create_"]').forEach(i => {
+      document.querySelectorAll('[id^="create_"]').forEach(i => { 
         const key = i.id.replace("create_", "");
         let val = i.value;
         if (i.type === "number") val = val ? Number(val) : null;
