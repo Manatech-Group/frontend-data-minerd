@@ -1,123 +1,112 @@
-const api_local = "https://localhost:7206/api";
-const api_prod = "https://api.minerd.gob.do/api";
-let API_BASE_URL = api_prod; // Cambia a api_local si estás en desarrollo";
+// Edit.js
+const api_local    = "https://localhost:7206/api";
+const api_prod     = "https://api.dataminerd.manatech.do/api";
+const API_BASE_URL = api_prod;               // Cambia a api_prod en producción
+const RESOURCE     = "dataminerd";
+const API_URL      = `${API_BASE_URL}/${RESOURCE}`;
 
-// Al cargar la página, extrae ?site=XYZ y llama a loadForEdit
+// Helper case-insensitive
+function getField(obj, fieldName) {
+  if (obj[fieldName] !== undefined) return obj[fieldName];
+  const key = Object.keys(obj)
+    .find(k => k.toLowerCase() === fieldName.toLowerCase());
+  return key ? obj[key] : "";
+}
+
+// 1) Cuando carga la página
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  const site = params.get("site");
-  if (site) {
-    loadForEdit(site);
+  const site   = params.get("site");
+  if (!site) {
+    alert("No se indicó ningún 'site' en la URL.");
+    return;
   }
+
+  // Rellenamos el campo readonly
+  document.getElementById("edit_Site").value = site;
+  loadForEdit(site);
+
+  // Al enviar el form, hacemos el PUT
+  document.getElementById("editForm")
+    .addEventListener("submit", e => {
+      e.preventDefault();
+      updateRecord(site);
+    });
 });
 
-// Cargar datos existentes en el form de edición
+// 2) Traer el objeto y rellenar inputs
 async function loadForEdit(site) {
-  // Rellenar el input readonly
-  document.getElementById("edit_Site").value = site;
-
   try {
     const res = await fetch(`${API_URL}/${encodeURIComponent(site)}`);
     if (!res.ok) {
-      alert("No existe el registro para site: " + site);
+      alert(`No existe el registro para site "${site}" (HTTP ${res.status})`);
       return;
     }
     const dto = await res.json();
 
-    // Asigna cada campo del DTO al formulario
-    document.getElementById("edit_Circuito").value            = dto.circuito            ?? "";
-    document.getElementById("edit_Nombre_Escuela").value      = dto.nombre_Escuela      ?? "";
-    document.getElementById("edit_WAN_IP").value              = dto.waN_IP               ?? "";
-    document.getElementById("edit_Latitud").value             = dto.latitud             ?? "";
-    document.getElementById("edit_Longitud").value            = dto.longitud            ?? "";
-    document.getElementById("edit_Long_Name").value           = dto.long_Name           ?? "";
-    document.getElementById("edit_Nombre_Contacto").value     = dto.nombre_Contacto     ?? "";
-    document.getElementById("edit_Telefono_Contacto").value   = dto.telefono_Contacto   ?? "";
-    document.getElementById("edit_Regional").value            = dto.regional            ?? "";
-    document.getElementById("edit_Distrito").value            = dto.distrito            ?? "";
-    document.getElementById("edit_Codigo_Planta_Fisica").value= dto.codigo_Planta_Fisica?? "";
-    document.getElementById("edit_Hostname").value            = dto.hostname            ?? "";
-    document.getElementById("edit_DDNS").value                = dto.ddns                ?? "";
-    document.getElementById("edit_IP_Gestion_FMG").value      = dto.iP_Gestion_FMG      ?? "";
-    document.getElementById("edit_IP_Gestion_SW").value       = dto.iP_Gestion_SW       ?? "";
-    document.getElementById("edit_SiteType").value            = dto.siteType            ?? "";
+    console.log("DTO recibido:", dto);
+    // Abre la consola y fíjate en la forma exacta de las keys.
+
+    // Lista de campos a mapear (el sufijo del input = el nombre de la propiedad)
+    const fields = [
+      "Circuito", "Nombre_Escuela", "WAN_IP", "Latitud", "Longitud",
+      "Long_Name", "Nombre_Contacto", "Telefono_Contacto", "Regional",
+      "Distrito", "Codigo_Planta_Fisica", "Hostname", "DDNS",
+      "IP_Gestion_FMG", "IP_Gestion_SW", "SiteType"
+    ];
+
+    fields.forEach(field => {
+      const input = document.getElementById(`edit_${field}`);
+      if (input) {
+        input.value = getField(dto, field) ?? "";
+      }
+    });
+
   } catch (err) {
     console.error("Error cargando datos:", err);
-    alert("Ocurrió un error al cargar los datos.");
+    alert(`Ocurrió un error al cargar los datos: ${err.message}`);
   }
 }
 
-// Actualizar el registro con PUT
+// 3) Enviar actualización
 async function updateBySite() {
-  const site = document.getElementById("edit_Site").value;
+  // 1) Leer el 'site' desde el campo readonly
+  const site = document.getElementById("edit_Site").value.trim();
   if (!site) {
     alert("Primero carga un registro para editar.");
     return;
   }
 
-  const dto = {
-    Circuito:       NumberOrNull("edit_Circuito"),
-    Nombre_Escuela: valueOrNull("edit_Nombre_Escuela"),
-    WAN_IP:         valueOrNull("edit_WAN_IP"),
-    Latitud:        valueOrNull("edit_Latitud"),
-    Longitud:       valueOrNull("edit_Longitud"),
-    Long_Name:      valueOrNull("edit_Long_Name"),
-    Nombre_Contacto:valueOrNull("edit_Nombre_Contacto"),
-    Telefono_Contacto: valueOrNull("edit_Telefono_Contacto"),
-    Regional:       valueOrNull("edit_Regional"),
-    Distrito:       valueOrNull("edit_Distrito"),
-    Codigo_Planta_Fisica: valueOrNull("edit_Codigo_Planta_Fisica"),
-    Hostname:       valueOrNull("edit_Hostname"),
-    DDNS:           valueOrNull("edit_DDNS"),
-    IP_Gestion_FMG: valueOrNull("edit_IP_Gestion_FMG"),
-    IP_Gestion_SW:  valueOrNull("edit_IP_Gestion_SW"),
-    SiteType:       valueOrNull("edit_SiteType")
-  };
+  // 2) Construir el DTO como en tu función original
+  const dto = {};
+  [
+    "Circuito", "Nombre_Escuela", "WAN_IP", "Latitud", "Longitud",
+    "Long_Name", "Nombre_Contacto", "Telefono_Contacto", "Regional",
+    "Distrito", "Codigo_Planta_Fisica", "Hostname", "DDNS",
+    "IP_Gestion_FMG", "IP_Gestion_SW", "SiteType"
+  ].forEach(field => {
+    const val = document.getElementById(`edit_${field}`).value.trim();
+    dto[field] = val === ""
+      ? null
+      : (field === "Circuito" ? Number(val) : val);
+  });
 
+  // 3) Hacer el PUT al endpoint correcto
   try {
     const res = await fetch(`${API_URL}/${encodeURIComponent(site)}`, {
-      method: "PUT",
+      method:  "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dto)
+      body:    JSON.stringify(dto)
     });
-
-    if (res.ok) {
-      alert("Registro actualizado correctamente.");
-      // Opcional: redirigir o recargar
-      window.location.href = "app.html";
-    } else {
+    if (!res.ok) {
       const errText = await res.text();
-      console.error("Error al actualizar:", errText);
-      alert("Error al actualizar: " + res.status);
+      throw new Error(`${res.status} ${res.statusText}: ${errText}`);
     }
+    alert("Registro actualizado correctamente.");
+    window.location.href = "app.html";
   } catch (err) {
-    console.error("Error en la petición PUT:", err);
-    alert("Ocurrió un error al actualizar.");
+    console.error("Error al actualizar:", err);
+    alert(`No se pudo actualizar el registro: ${err.message}`);
   }
 }
 
-async function promptForSite() {
-  const current = document.getElementById('edit_Site').value;
-  const site = prompt('Por favor, ingresa el Site (ID):', current);
-  if (site !== null) {
-    const id = site.trim();
-    if (!id) return;
-
-    // Actualiza el input
-    document.getElementById('edit_Site').value = id;
-    // Vuelve a cargar los datos de ese Site
-    await loadForEdit(id);
-  }
-}
-
-
-// Helpers para convertir valores vacíos a null o Number
-function valueOrNull(id) {
-  const val = document.getElementById(id).value.trim();
-  return val === "" ? null : val;
-}
-
-function NumberOrNull(id) {
-  const val = document.getElementById(id).value;
-  return val === "" ? null : Number(val);
-}

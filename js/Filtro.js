@@ -1,7 +1,8 @@
-// Filtro.js
-const api_local = "https://localhost:7206/api";
-const api_prod = "https://api.minerd.gob.do/api";
-let API_BASE_URL = api_prod; // Cambia a api_local si estás en desarrollo";
+const api_local    = "https://localhost:7206/api";
+const api_prod     = "https://api.dataminerd.manatech.do/api";
+const API_BASE_URL = api_prod;                   // Cambia a api_prod en producción
+const RESOURCE     = "dataminerd";
+const API_URL      = `${API_BASE_URL}/${RESOURCE}`;
 
 let allData = [];
 let dataTable = null;
@@ -9,7 +10,7 @@ let dataTable = null;
 // 1) Traer datos del API
 async function fetchData() {
   const res = await fetch(API_URL);
-  if (!res.ok) throw new Error(`Error en la petición: ${res.status}`);
+  if (!res.ok) throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
   const json = await res.json();
   return Array.isArray(json) ? json : [json];
 }
@@ -17,9 +18,9 @@ async function fetchData() {
 // 2) Helper case‐insensitive
 function getField(obj, fieldName) {
   if (obj[fieldName] !== undefined) return obj[fieldName];
-  const foundKey = Object.keys(obj)
+  const found = Object.keys(obj)
     .find(k => k.toLowerCase() === fieldName.toLowerCase());
-  return foundKey ? obj[foundKey] : "";
+  return found ? obj[found] : "";
 }
 
 // 3) Rellenar la tabla
@@ -47,7 +48,6 @@ function fillTable(data) {
     const telefonoContacto = getField(item, "Telefono_Contacto");
     const distrito         = getField(item, "Distrito");
 
-    // Construyes las celdas y al final, la de “Editar”
     tr.innerHTML = `
       <td class="px-6 py-4 font-medium text-gray-900">${site}</td>
       <td class="px-6 py-4">${circuito}</td>
@@ -63,12 +63,10 @@ function fillTable(data) {
         >
           Editar
         </a>
-      </td>
-    `;
+      </td>`;
     tbody.appendChild(tr);
   });
 }
-
 
 // 4) Inicializar/reiniciar simple-datatables
 function initDataTable() {
@@ -90,59 +88,51 @@ function initDataTable() {
       info: "Mostrando {start} a {end} de {rows} entradas",
     },
     columns: [
-      {}, // 0: Site
-      {}, // 1: Circuito
-      {}, // 2: Nombre Escuela
-      {}, // 3: WAN IP
-      {}, // 4: Contacto
-      {}, // 5: Teléfono
-      {}, // 6: Distrito
-      { select: 7, sortable: false } // 7: Acciones (editar)
+      {}, {}, {}, {}, {}, {}, {},
+      { select: 7, sortable: false } // índice 7 → acciones
     ]
   });
 }
 
-
 // 5) Listeners de búsqueda y limpieza
-function setupSearchListeners() {
+async function setupSearchListeners() {
   const input = document.getElementById("searchInput");
   const btnS  = document.getElementById("btnSearch");
   const btnC  = document.getElementById("btnClear");
 
-  // Función que trae datos (todos o filtrados)
   async function fetchAndFill(term = "") {
     const url = term
       ? `${API_URL}/search?search=${encodeURIComponent(term)}`
       : API_URL;
+
     try {
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`Error ${res.status}`);
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const data = await res.json();
-      fillTable(data);
-      dataTable.update();
-      // Si quieres que allData siempre refleje lo cargado:
-      allData = data;
+      allData = Array.isArray(data) ? data : [data];
+
+      // 1) Destruye la instancia existente y limpia controles
+      dataTable.destroy();
+      document.querySelector("#table-controls").innerHTML = "";
+
+      // 2) Rellena el <tbody> con los nuevos datos
+      fillTable(allData);
+
+      // 3) Inicializa de nuevo el DataTable sobre el DOM actualizado
+      initDataTable();
     } catch (err) {
       console.error("Error al buscar:", err);
-      alert("No se pudo realizar la búsqueda. Revisa la consola.");
+      alert(`No se pudo realizar la búsqueda: ${err.message}`);
     }
   }
 
-  // Botón Buscar: llama al endpoint con el término
-  btnS.addEventListener("click", () => {
-    const term = input.value.trim();
-    fetchAndFill(term);
-  });
-
-  // Botón Limpiar: quita el término y recarga todo
+  btnS.addEventListener("click", () => fetchAndFill(input.value.trim()));
   btnC.addEventListener("click", () => {
     input.value = "";
     fetchAndFill();
   });
-
-  // Tecla Enter dispara búsqueda
   input.addEventListener("keyup", e => {
-    if (e.key === "Enter") btnS.click();
+    if (e.key === "Enter") fetchAndFill(input.value.trim());
   });
 }
 
@@ -157,6 +147,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupSearchListeners();
   } catch (err) {
     console.error("Error al inicializar la tabla:", err);
-    alert("No se pudo cargar la información. Revisa la consola para más detalles.");
+    alert(`No se pudo cargar la información: ${err.message}`);
   }
 });

@@ -1,6 +1,8 @@
-const api_local = "https://localhost:7206/api";
-const api_prod = "https://api.minerd.gob.do/api";
-let API_BASE_URL = api_prod; // Cambia a api_local si estás en desarrollo";
+const api_local     = "https://localhost:7206/api";
+const api_prod      = "https://api.dataminerd.manatech.do/api";
+const API_BASE_URL  = api_prod;  // Cambia a api_prod en producción
+const RESOURCE      = "dataminerd";
+const API_URL       = `${API_BASE_URL}/${RESOURCE}`;
 
 let devices = [];
 let selectedSerialNumber = null;
@@ -12,119 +14,181 @@ const allowedSiteTypes = [
   "Fortinet", "Hybrid"
 ];
 
-document.addEventListener("DOMContentLoaded", async () => {
+// 1) Carga de dispositivos desde el API
+async function loadDevices() {
   try {
-    const res = await fetch(`${API_BASE_URL}/device`);
-    devices = await res.json();
+    const res  = await fetch(`${API_BASE_URL}/device`);
+    if (!res.ok) throw new Error(`Error ${res.status} ${res.statusText}`);
+    const json = await res.json();
+    devices = Array.isArray(json) ? json : [json];
   } catch (err) {
     console.error("Error cargando dispositivos:", err);
+    alert(`No se pudieron cargar los dispositivos: ${err.message}`);
   }
+}
 
-  const input = document.getElementById("deviceSearch");
+// 2) Setup de autocompletar para Fortigate (igual que antes)
+function setupDeviceAutocomplete() {
+  const input       = document.getElementById("deviceSearch");
   const suggestions = document.getElementById("suggestionsList");
 
   input.addEventListener("input", () => {
-    const value = input.value.toLowerCase();
+    const term = input.value.trim().toLowerCase();
     suggestions.innerHTML = "";
+    selectedSerialNumber = null;
 
-    if (!value) {
+    if (!term) {
       suggestions.classList.add("hidden");
       return;
     }
 
-    const filtered = devices.filter(d =>
-      d.serialNumber.toLowerCase().includes(value) ||
-      d.siteName.toLowerCase().includes(value)
-    ).slice(0, 10);
+    const matches = devices
+      .filter(d =>
+        d.serialNumber.toLowerCase().includes(term) ||
+        d.siteName.toLowerCase().includes(term)
+      )
+      .slice(0, 10);
 
-    if (filtered.length === 0) {
+    if (!matches.length) {
       suggestions.classList.add("hidden");
       return;
     }
 
-    filtered.forEach(device => {
+    matches.forEach(device => {
       const li = document.createElement("li");
       li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm";
-      li.textContent = `${device.serialNumber} - ${device.siteName}`;
+      li.textContent = `${device.serialNumber} — ${device.siteName}`;
       li.dataset.serial = device.serialNumber;
-
       li.addEventListener("click", () => {
         input.value = device.serialNumber;
         selectedSerialNumber = device.serialNumber;
         suggestions.classList.add("hidden");
       });
-
       suggestions.appendChild(li);
     });
 
     suggestions.classList.remove("hidden");
   });
 
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", e => {
     if (!input.contains(e.target) && !suggestions.contains(e.target)) {
       suggestions.classList.add("hidden");
     }
   });
-});
+}
 
+// 3) Envía el formulario para crear un registro
 async function createRecord() {
+  const getVal = id => document.getElementById(id).value.trim();
+
+  // 3.1) Validar campo Site
+  const site = getVal("create_Site");
+  if (!site) {
+    alert("El campo Site es obligatorio.");
+    return;
+  }
+
+  // 3.2) Comprobar que no exista ya en BD
+  try {
+    const check = await fetch(`${API_URL}/${encodeURIComponent(site)}`);
+    if (check.ok) {
+      alert(`El Site "${site}" ya existe. Elige otro.`);
+      return;
+    }
+    if (check.status !== 404) {
+      const errText = await check.text();
+      throw new Error(`HTTP ${check.status} — ${errText}`);
+    }
+    // status 404: no existe, seguimos
+  } catch (err) {
+    console.error("Error al validar Site:", err);
+    alert(`No se pudo validar el Site: ${err.message}`);
+    return;
+  }
+
+  // 3.3) Construir el payload
   const payload = {
-    Site: document.getElementById("create_Site").value.trim(),
-    Circuito: parseInt(document.getElementById("create_Circuito").value) || null,
-    Nombre_Escuela: document.getElementById("create_Nombre_Escuela").value.trim(),
-    WAN_IP: document.getElementById("create_WAN_IP").value.trim(),
-    Latitud: document.getElementById("create_Latitud").value.trim(),
-    Longitud: document.getElementById("create_Longitud").value.trim(),
-    Long_Name: document.getElementById("create_Long_Name").value.trim(),
-    Nombre_Contacto: document.getElementById("create_Nombre_Contacto").value.trim(),
-    Telefono_Contacto: document.getElementById("create_Telefono_Contacto").value.trim(),
-    Regional: document.getElementById("create_Regional").value.trim(),
-    Distrito: document.getElementById("create_Distrito").value.trim(),
-    Codigo_Planta_Fisica: document.getElementById("create_Codigo_Planta_Fisica").value.trim(),
-    Hostname: document.getElementById("create_Hostname").value.trim(),
-    DDNS: document.getElementById("create_DDNS").value.trim(),
-    IP_Gestion_FMG: document.getElementById("create_IP_Gestion_FMG").value.trim(),
-    IP_Gestion_SW: document.getElementById("create_IP_Gestion_SW").value.trim(),
-    SiteType: document.getElementById("create_SiteType").value.trim(),
+    Site: site,
+    Circuito: (() => {
+      const n = parseInt(getVal("create_Circuito"), 10);
+      return isNaN(n) ? null : n;
+    })(),
+    Nombre_Escuela: getVal("create_Nombre_Escuela"),
+    WAN_IP: getVal("create_WAN_IP"),
+    Latitud: getVal("create_Latitud"),
+    Longitud: getVal("create_Longitud"),
+    Long_Name: getVal("create_Long_Name"),
+    Nombre_Contacto: getVal("create_Nombre_Contacto"),
+    Telefono_Contacto: getVal("create_Telefono_Contacto"),
+    Regional: getVal("create_Regional"),
+    Distrito: getVal("create_Distrito"),
+    Codigo_Planta_Fisica: getVal("create_Codigo_Planta_Fisica"),
+    Hostname: getVal("create_Hostname"),
+    DDNS: getVal("create_DDNS"),
+    IP_Gestion_FMG: getVal("create_IP_Gestion_FMG"),
+    IP_Gestion_SW: getVal("create_IP_Gestion_SW"),
+    SiteType: getVal("create_SiteType"),
     Fortigate: selectedSerialNumber
   };
 
-  // ✅ Validaciones previas
-  const requiredFields = ["Site", "WAN_IP", "Nombre_Escuela", "Long_Name", "SiteType"];
-  for (const field of requiredFields) {
-    if (!payload[field]) {
-      alert(`El campo ${field} es obligatorio.`);
+  // 3.4) Validaciones de campos obligatorios
+  const required = ["Site", "WAN_IP", "Nombre_Escuela", "Long_Name", "SiteType"];
+  for (const f of required) {
+    if (!payload[f]) {
+      alert(`El campo "${f}" es obligatorio.`);
       return;
     }
   }
-
   if (!allowedSiteTypes.includes(payload.SiteType)) {
-    alert(`El valor de SiteType no es válido. Debe ser uno de: ${allowedSiteTypes.join(", ")}`);
+    alert(`"SiteType" inválido. Debe ser: ${allowedSiteTypes.join(", ")}`);
     return;
   }
-
   if (!payload.Fortigate) {
-    alert("Debes seleccionar un Fortigate válido desde la lista.");
+    alert("Selecciona un Fortigate de la lista.");
     return;
   }
 
+  // 3.5) Envío POST con manejo completo del body de error
   try {
-    const res = await fetch(`${API_BASE_URL}/dataminerd`, {
-      method: "POST",
+    const res = await fetch(API_URL, {
+      method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body:    JSON.stringify(payload)
     });
 
-    if (res.ok) {
-      alert("Sitio creado correctamente.");
-      document.getElementById("createForm").reset();
-      selectedSerialNumber = null;
-    } else {
-      const error = await res.text();
-      alert("Error al crear el sitio: " + error);
+    if (!res.ok) {
+      const ct = res.headers.get("content-type") || "";
+      let errorBody;
+      if (ct.includes("application/json")) {
+        errorBody = JSON.stringify(await res.json(), null, 2);
+      } else {
+        errorBody = await res.text();
+      }
+      console.error("[create] server error:", res.status, errorBody);
+      alert(`Error al crear el sitio (HTTP ${res.status}):\n${errorBody}`);
+      return;
     }
+
+    alert("Sitio creado correctamente.");
+    document.getElementById("createForm").reset();
+    selectedSerialNumber = null;
+
   } catch (err) {
-    console.error("Error en la solicitud:", err);
-    alert("Error al enviar los datos.");
+    console.error("[create] excepción:", err);
+    alert(`Excepción al crear el sitio: ${err.message}`);
   }
 }
+
+// 4) Arranque al cargar la página
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadDevices();
+  setupDeviceAutocomplete();
+
+  const form = document.getElementById("createForm");
+  // Quita cualquier handler inline y usa sólo este listener
+  form.removeAttribute("onsubmit");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    await createRecord();
+  });
+});
