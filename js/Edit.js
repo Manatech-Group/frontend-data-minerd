@@ -1,4 +1,6 @@
-const API_URL = "https://localhost:7206/api/DataMinerd";
+const api_local = "https://localhost:7206/api";
+const api_prod = "https://api.minerd.gob.do/api";
+let API_BASE_URL = api_prod; // Cambia a api_local si estás en desarrollo";
 
 // Al cargar la página, extrae ?site=XYZ y llama a loadForEdit
 document.addEventListener("DOMContentLoaded", () => {
