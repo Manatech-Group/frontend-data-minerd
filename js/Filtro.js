@@ -1,6 +1,6 @@
 const api_local    = "https://localhost:7206/api";
 const api_prod     = "https://api.dataminerd.manatech.do/api";
-const API_BASE_URL = api_prod;                   // Cambia a api_prod en producción
+const API_BASE_URL = api_local;                   // Cambia a api_prod en producción
 const RESOURCE     = "dataminerd";
 const API_URL      = `${API_BASE_URL}/${RESOURCE}`;
 
@@ -27,13 +27,25 @@ function getField(obj, fieldName) {
 function fillTable(data) {
   const tbody = document.querySelector("#export-table tbody");
   tbody.innerHTML = "";
+  
+  //un log para ver el número de registros y th
+  const thCount = document.querySelectorAll("#export-table thead th").length;
+  console.log(`fillTable: registros=${data.length}, thCount=${thCount}`);
 
   if (data.length === 0) {
-    tbody.innerHTML = `
-      <tr><td class="px-6 py-4 text-center text-gray-500" colspan="8">
-        No hay registros
-      </td></tr>`;
-    return;
+    console.log("🍂 Rama NO-REGISTROS: generando 1 <td> con colspan");
+    //generar 8 td auqnue no haya datos para que datatables no falle
+    // y no se vea un error de "No hay registros"
+    const thCount = document.querySelectorAll("#export-table thead th").length;
+      let emptyRow = "<tr>";
+      for (let i = 0; i < thCount; i++) {
+        emptyRow += i === 0
+          ? `<td class="px-6 py-4 text-center text-gray-500">No hay registros</td>`
+          : "<td></td>";
+      }
+      emptyRow += "</tr>";
+      tbody.innerHTML = emptyRow;
+      return;
   }
 
   data.forEach(item => {
@@ -47,11 +59,11 @@ function fillTable(data) {
     const nombreContacto   = getField(item, "Nombre_Contacto");
     const telefonoContacto = getField(item, "Telefono_Contacto");
     const distrito         = getField(item, "Distrito");
-
+    // el whitespace-pre-wrap es para que el texto no quite los espacios extra
     tr.innerHTML = `
       <td class="px-6 py-4 font-medium text-gray-900">${site}</td>
       <td class="px-6 py-4">${circuito}</td>
-      <td class="px-6 py-4">${nombreEscuela}</td>
+      <td class="px-6 py-4 whitespace-pre-wrap">${nombreEscuela}</td>
       <td class="px-6 py-4">${wanIp}</td>
       <td class="px-6 py-4">${nombreContacto}</td>
       <td class="px-6 py-4">${telefonoContacto}</td>
@@ -70,6 +82,11 @@ function fillTable(data) {
 
 // 4) Inicializar/reiniciar simple-datatables
 function initDataTable() {
+  // 1) Verificar recuento de encabezados y columnas configuradas
+  const thCount = document.querySelectorAll('#export-table thead th').length;
+  const colConfigCount = 8;  // aquí 8 porque tienes 7 vacíos + 1 con select en tu array columns
+  console.log(`TH en thead: ${thCount}, columnas en config: ${colConfigCount}`);
+
   if (dataTable) {
     dataTable.destroy();
     document.querySelector("#table-controls").innerHTML = "";
@@ -77,22 +94,14 @@ function initDataTable() {
 
   dataTable = new simpleDatatables.DataTable("#export-table", {
     perPage: 10,
-    perPageSelect: [10, 25, 50, 100],
-    fixedHeight: true,
-    searchable: false,
-    layout: { top: "#table-controls", bottom: true },
-    labels: {
-      placeholder: "Buscar en la tabla…",
-      perPage: "{select} filas por página",
-      noRows: "No se encontraron resultados",
-      info: "Mostrando {start} a {end} de {rows} entradas",
-    },
+    searchable: false, // Deshabilitado porque ya tenemos un buscador propio
     columns: [
       {}, {}, {}, {}, {}, {}, {},
-      { select: 7, sortable: false } // índice 7 → acciones
+      { select: 7, sortable: false }
     ]
   });
 }
+
 
 // 5) Listeners de búsqueda y limpieza
 async function setupSearchListeners() {
@@ -111,12 +120,20 @@ async function setupSearchListeners() {
       const data = await res.json();
       allData = Array.isArray(data) ? data : [data];
 
+      
+
       // 1) Destruye la instancia existente y limpia controles
       dataTable.destroy();
       document.querySelector("#table-controls").innerHTML = "";
 
       // 2) Rellena el <tbody> con los nuevos datos
       fillTable(allData);
+
+      // tras fillTable(allData);
+      const thCount = document.querySelectorAll('#export-table thead th').length;
+      const tdCount = document.querySelectorAll('#export-table tbody tr:first-child td').length;
+      console.log(`Tras fetchAndFill: thCount=${thCount}, tdCount primeras <td>=${tdCount}`);
+
 
       // 3) Inicializa de nuevo el DataTable sobre el DOM actualizado
       initDataTable();

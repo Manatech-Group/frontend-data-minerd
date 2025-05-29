@@ -1,7 +1,7 @@
 // Edit.js
 const api_local    = "https://localhost:7206/api";
 const api_prod     = "https://api.dataminerd.manatech.do/api";
-const API_BASE_URL = api_prod;               // Cambia a api_prod en producción
+const API_BASE_URL = api_local;               // Cambia a api_prod en producción
 const RESOURCE     = "dataminerd";
 const API_URL      = `${API_BASE_URL}/${RESOURCE}`;
 
