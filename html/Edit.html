@@ -1,357 +1,403 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>CRUD DataMinerd</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <title>CRUD DataMinerd</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Tailwind + Flowbite CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/flowbite@latest/dist/flowbite.min.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/flowbite@latest/dist/flowbite.min.css"
+    />
+  </head>
 
-</head>
-<body>
+  <body>
+    <!-- Navbar -->
+    <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+      <div
+        class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
+      >
+        <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+          <img
+            src="../imgs/logo_high_resolution 1.png"
+            class="h-8"
+            alt="Manatech Group Logo"
+          />
+          <span
+            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+            >Manatech</span
+          >
+        </a>
 
-<nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="../imgs/logo_high_resolution 1.png" class="h-8" alt="Manatech Group Logo" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Manatech</span>
-    </a>
-    <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
-        <span class="sr-only">Abrir Menu Principal</span>
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
-        </svg>
-    </button>
-    <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
-      <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+        <button
+          data-collapse-toggle="navbar-dropdown"
+          type="button"
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          aria-controls="navbar-dropdown"
+          aria-expanded="false"
+        >
+          <span class="sr-only">Abrir Menu Principal</span>
+          <svg
+            class="w-5 h-5"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 17 14"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M1 1h15M1 7h15M1 13h15"
+            />
+          </svg>
+        </button>
+
+        <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+          <ul
+            class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+          >
+            <li>
+              <a
+                href="app.html"
+                class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+                aria-current="page"
+                >Inicio</a
+              >
+            </li>
+            <li>
+              <a
+                href="Create.html"
+                class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                >Crear Site</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!--fin navbar-->
+
+    <!-- Formulario de edición -->
+    <section class="bg-white dark:bg-gray-900 pb-20">
+      <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16">
+        <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+          Editar site
+        </h2>
+
+        <form id="editForm" onsubmit="event.preventDefault(); updateBySite();">
+          <div class="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
+            <!-- Site (ID) readonly -->
+            <div class="sm:col-span-2">
+              <label
+                for="edit_Site"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Site (ID)
+              </label>
+              <input
+                type="text"
+                id="edit_Site"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                readonly
+              />
+            </div>
+
+            <!-- Circuito -->
+            <div>
+              <label
+                for="edit_Circuito"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Circuito
+              </label>
+              <input
+                type="number"
+                id="edit_Circuito"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Nombre de la escuela -->
+            <div>
+              <label
+                for="edit_Nombre_Escuela"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Nombre de la escuela
+              </label>
+              <input
+                type="text"
+                id="edit_Nombre_Escuela"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- WAN IP -->
+            <div>
+              <label
+                for="edit_WAN_IP"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                WAN IP
+              </label>
+              <input
+                type="text"
+                id="edit_WAN_IP"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Latitud -->
+            <div>
+              <label
+                for="edit_Latitud"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Latitud
+              </label>
+              <input
+                type="text"
+                id="edit_Latitud"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Longitud -->
+            <div>
+              <label
+                for="edit_Longitud"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Longitud
+              </label>
+              <input
+                type="text"
+                id="edit_Longitud"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Nombre largo -->
+            <div>
+              <label
+                for="edit_Long_Name"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Nombre largo
+              </label>
+              <input
+                type="text"
+                id="edit_Long_Name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Nombre de contacto -->
+            <div>
+              <label
+                for="edit_Nombre_Contacto"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Nombre de contacto
+              </label>
+              <input
+                type="text"
+                id="edit_Nombre_Contacto"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Teléfono de contacto -->
+            <div>
+              <label
+                for="edit_Telefono_Contacto"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Teléfono de contacto
+              </label>
+              <input
+                type="text"
+                id="edit_Telefono_Contacto"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Regional -->
+            <div>
+              <label
+                for="edit_Regional"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Regional
+              </label>
+              <input
+                type="text"
+                id="edit_Regional"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Distrito -->
+            <div>
+              <label
+                for="edit_Distrito"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Distrito
+              </label>
+              <input
+                type="text"
+                id="edit_Distrito"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Código Planta Física -->
+            <div>
+              <label
+                for="edit_Codigo_Planta_Fisica"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Código Planta Física
+              </label>
+              <input
+                type="text"
+                id="edit_Codigo_Planta_Fisica"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- Hostname -->
+            <div>
+              <label
+                for="edit_Hostname"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Hostname
+              </label>
+              <input
+                type="text"
+                id="edit_Hostname"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- DDNS -->
+            <div>
+              <label
+                for="edit_DDNS"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                DDNS
+              </label>
+              <input
+                type="text"
+                id="edit_DDNS"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- IP Gestión FMG -->
+            <div>
+              <label
+                for="edit_IP_Gestion_FMG"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                IP Gestión FMG
+              </label>
+              <input
+                type="text"
+                id="edit_IP_Gestion_FMG"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- IP Gestión SW -->
+            <div>
+              <label
+                for="edit_IP_Gestion_SW"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                IP Gestión SW
+              </label>
+              <input
+                type="text"
+                id="edit_IP_Gestion_SW"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+
+            <!-- SiteType -->
+            <div>
+              <label
+                for="edit_SiteType"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                SiteType
+              </label>
+              <input
+                type="text"
+                id="edit_SiteType"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="flex items-center space-x-4">
+            <!-- Actualizar -->
+            <button
+              type="button"
+              onclick="updateBySite()"
+              class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              Actualizar
+            </button>
+
+            <!-- Cancelar -->
+            <a
+              href="app.html"
+              class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+            >
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </section>
+    <!-- Fin del formulario de edición -->
+
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 left-0 z-20 w-full p-4 bg-white border-t border-gray-200 shadow-sm md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 dark:border-gray-600"
+    >
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        © 2025
+        <a href="#" class="hover:underline">Manatech™</a>. All Rights Reserved.
+      </span>
+      <ul
+        class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0"
+      >
         <li>
-          <a href="app.html" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">Inicio</a>
+          <a href="#" class="hover:underline me-4 md:me-6">About</a>
         </li>
-               
         <li>
-          <a href="Create.html" class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Crear Site</a>
+          <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+        </li>
+        <li>
+          <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+        </li>
+        <li>
+          <a href="#" class="hover:underline">Contact</a>
         </li>
       </ul>
-    </div>
-  </div>
-</nav>
+    </footer>
+    <!-- Fin del footer -->
 
-
-
-<section class="bg-white dark:bg-gray-900 pb-20">
-  <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16">
-    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Editar site</h2>
-    <form id="editForm" onsubmit="event.preventDefault(); updateBySite();">
-      <div class="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
-        <!-- Site (ID) readonly -->
-        <div class="sm:col-span-2">
-          <label for="edit_Site" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Site (ID)
-          </label>
-          <input
-            type="text"
-            id="edit_Site"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            readonly
-          />
-        </div>
-
-       
-
-        <!-- Circuito -->
-        <div>
-          <label for="edit_Circuito" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Circuito
-          </label>
-          <input
-            type="number"
-            id="edit_Circuito"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Nombre_Escuela -->
-        <div>
-          <label for="edit_Nombre_Escuela" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Nombre de la escuela
-          </label>
-          <input
-            type="text"
-            id="edit_Nombre_Escuela"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- WAN_IP -->
-        <div>
-          <label for="edit_WAN_IP" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            WAN IP
-          </label>
-          <input
-            type="text"
-            id="edit_WAN_IP"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Latitud -->
-        <div>
-          <label for="edit_Latitud" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Latitud
-          </label>
-          <input
-            type="text"
-            id="edit_Latitud"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Longitud -->
-        <div>
-          <label for="edit_Longitud" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Longitud
-          </label>
-          <input
-            type="text"
-            id="edit_Longitud"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Long_Name -->
-        <div>
-          <label for="edit_Long_Name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Nombre largo
-          </label>
-          <input
-            type="text"
-            id="edit_Long_Name"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Nombre_Contacto -->
-        <div>
-          <label for="edit_Nombre_Contacto" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Nombre de contacto
-          </label>
-          <input
-            type="text"
-            id="edit_Nombre_Contacto"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Telefono_Contacto -->
-        <div>
-          <label for="edit_Telefono_Contacto" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Teléfono de contacto
-          </label>
-          <input
-            type="text"
-            id="edit_Telefono_Contacto"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Regional -->
-        <div>
-          <label for="edit_Regional" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Regional
-          </label>
-          <input
-            type="text"
-            id="edit_Regional"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Distrito -->
-        <div>
-          <label for="edit_Distrito" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Distrito
-          </label>
-          <input
-            type="text"
-            id="edit_Distrito"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Codigo_Planta_Fisica -->
-        <div>
-          <label for="edit_Codigo_Planta_Fisica" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Código Planta Física
-          </label>
-          <input
-            type="text"
-            id="edit_Codigo_Planta_Fisica"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- Hostname -->
-        <div>
-          <label for="edit_Hostname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Hostname
-          </label>
-          <input
-            type="text"
-            id="edit_Hostname"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- DDNS -->
-        <div>
-          <label for="edit_DDNS" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            DDNS
-          </label>
-          <input
-            type="text"
-            id="edit_DDNS"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- IP_Gestion_FMG -->
-        <div>
-          <label for="edit_IP_Gestion_FMG" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            IP Gestión FMG
-          </label>
-          <input
-            type="text"
-            id="edit_IP_Gestion_FMG"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- IP_Gestion_SW -->
-        <div>
-          <label for="edit_IP_Gestion_SW" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            IP Gestión SW
-          </label>
-          <input
-            type="text"
-            id="edit_IP_Gestion_SW"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <!-- SiteType -->
-        <div>
-          <label for="edit_SiteType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            SiteType
-          </label>
-          <input
-            type="text"
-            id="edit_SiteType"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                   focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                   dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-      </div>
-
-      <!-- Botones -->
-<div class="flex items-center space-x-4">
- <button
-  type="button"
-  onclick="updateBySite()"
-  class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300
-         font-medium rounded-lg text-sm px-5 py-2.5 text-center"
->
-  Actualizar
-</button>
-
- </button>
-
-  <a
-    href="app.html"
-    class="text-red-600 inline-flex items-center hover:text-white border border-red-600 
-           hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium 
-           rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 
-           dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-  >
-    Cancelar
-  </a>
-</div>
-        </a>
-      </div>
-    </form>
-  </div>
-</section>
-
-
-<footer class="fixed bottom-0 left-0 z-20 w-full p-4 bg-white border-t border-gray-200 shadow-sm md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800 dark:border-gray-600">
-    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a href="" class="hover:underline">Manatech™</a>. All Rights Reserved.
-    </span>
-    <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
-        <li>
-            <a href="#" class="hover:underline me-4 md:me-6">About</a>
-        </li>
-        <li>
-            <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
-        </li>
-        <li>
-            <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
-        </li>
-        <li>
-            <a href="#" class="hover:underline">Contact</a>
-        </li>
-    </ul>
-</footer>
-
-  <script src="../js/Edit.js"></script>
-</body>
+    <!-- Script del formulario -->
+    <script src="../js/Edit.js"></script>
+  </body>
 </html>
